@@ -5,9 +5,9 @@ const App: React.FC = () => {
   return (
     <>
       <h2>Box</h2>
-      <Box>
-        <div>1</div>
-        <div>2  </div>
+      <Box padding={20} direction="row" spacing={20} justify="">
+        <Box margin={[10, 0]}>1</Box>
+        <div>2</div>
       </Box>
     </>
   );
