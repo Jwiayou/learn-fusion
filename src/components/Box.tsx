@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, ReactElement, CSSProperties } from 'react';
 import styled from 'styled-components';
-import { isNumber, isArray } from 'lodash';
+import { isNumber, isArray, isObject } from 'lodash';
 
 const StyledWrapper = styled.div`
   .box {
@@ -12,11 +12,15 @@ const StyledWrapper = styled.div`
   .column {
     flex-direction: column;
   }
+  .wrap {
+    flex-wrap: wrap;
+  }
 `;
 
 function Box({
   spacing,
   direction = 'column',
+  wrap,
   padding,
   margin,
   children,
@@ -25,6 +29,7 @@ function Box({
 }: PropsWithChildren<{
   spacing?: number;
   direction?: 'row' | 'column';
+  wrap?: boolean;
   padding?: number | number[];
   margin?: number | number[];
   justify?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around';
@@ -33,17 +38,27 @@ function Box({
   function renderChildren() {
     if (!isNumber(spacing)) return children;
     return React.Children.map(children, (node, index) => {
-      switch (index) {
-        case 0:
-          return node;
-        case React.Children.toArray(children).length - 1:
-          return React.cloneElement(node as ReactElement, {
-            style: { margin: direction === 'column' ? `${spacing / 2}px 0 0` : `0  0 0 ${spacing / 2}px` },
-          });
-        default:
-          return React.cloneElement(node as ReactElement, {
-            style: { margin: direction === 'column' ? `${spacing / 2}px 0` : `0 ${spacing / 2}px` },
-          });
+      if (isObject(node) && 'props' in node) {
+        switch (index) {
+          case 0:
+            return node;
+          case React.Children.toArray(children).length - 1:
+            return React.cloneElement(node as ReactElement, {
+              style: {
+                ...node.props.style,
+                margin: direction === 'column' ? `${spacing / 2}px 0 0` : `0  0 0 ${spacing / 2}px`,
+              },
+            });
+          default:
+            return React.cloneElement(node as ReactElement, {
+              style: {
+                ...node.props.style,
+                margin: direction === 'column' ? `${spacing / 2}px 0` : `0 ${spacing / 2}px`,
+              },
+            });
+        }
+      } else {
+        return node;
       }
     });
   }
@@ -76,7 +91,7 @@ function Box({
 
   return (
     <StyledWrapper>
-      <div className={`box ${direction}`} style={style}>
+      <div className={`box ${direction} ${wrap && 'wrap'}`} style={style}>
         {renderChildren()}
       </div>
     </StyledWrapper>
