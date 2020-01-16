@@ -44,6 +44,7 @@ function Box({
             return node;
           case React.Children.toArray(children).length - 1:
             return React.cloneElement(node as ReactElement, {
+              ...node.props,
               style: {
                 ...node.props.style,
                 margin: direction === 'column' ? `${spacing / 2}px 0 0` : `0  0 0 ${spacing / 2}px`,
@@ -51,6 +52,7 @@ function Box({
             });
           default:
             return React.cloneElement(node as ReactElement, {
+              ...node.props,
               style: {
                 ...node.props.style,
                 margin: direction === 'column' ? `${spacing / 2}px 0` : `0 ${spacing / 2}px`,
